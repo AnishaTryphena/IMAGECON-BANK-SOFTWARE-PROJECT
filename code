@@ -1,19 +1,736 @@
+import tkinter as tk
+import tkinter as Tk
 from tkinter import *
-import os
-from pymysql import *
-from tkinter import messagebox
+import tkinter.messagebox as mb
+import os 
+from datetime import date
+import pymysql
 
-def register():
-  global register_screen
-  register screen=Toplevel(main_screen)
-  register_screen.title("Register")
-  register_screen.geometry("1000x250")
-  global username
-  global password
-  global username_entry
-  global password_entry
-  username = StringVar()
-  password = StringVar()
-  Label(register_screen,text="Please enter the details",bg="skyblue").pack()
-  Label(register_screen,text = "").pack()
-  username_label=Label(register_screen,text="Username*")
+
+connector = pymysql.connect(host="localhost",user = 'root',
+                               password = 'xxxxx',
+                               database = 'xxxx',
+                               autocommit=True
+                               )
+
+cursor = connector.cursor()
+
+query = 'CREATE TABLE IF NOT EXISTS banking_system (ID INT AUTO_INCREMENT PRIMARY KEY, DateAcc DATE NOT NULL, Name TEXT(20) NOT NULL, UserName TEXT(20) NOT NULL, AccNum INT(8) NOT NULL, Pass VARCHAR(10) NOT NULL, Gender TEXT NOT NULL, DoB DATE NOT NULL, AccTyp TEXT NOT NULL, Nationality TEXT NOT NULL, MobNum VARCHAR(10) NOT NULL, KYC VARCHAR(20) NOT NULL, Balance FLOAT NOT NULL)'
+
+cursor.execute(query)
+
+connector.commit()
+
+
+class Login_Success_Window(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.original_frame = parent
+        self.geometry("1100x700")
+        self.title("Registration Successful")
+        self.configure(background="#ff80ff")
+        self.lbl_Login_success = tk.Label(self, text="Login Success", font=("Source Serif Pro Semibold", 15), bg="yellow", fg="blue")
+        self.lbl_Login_success.place(relx=0.150 , rely=0.111, height=21, width=250)
+
+
+        self.btn_register = tk.Button(self, text="OK", font=("Source Serif Pro Semibold", 11), bg="yellow", fg="blue",command=self.delete_login_success)
+        self.btn_register.place(relx=0.467, rely=0.311, height=21, width=30)
+    def delete_login_success(self):
+        mb.showinfo('Information', "Login Successful " + str(Username))
+        self.destroy()
+        self.original_frame.show()
+
+
+
+class RegisterWindow(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.original_frame = parent
+        self.geometry("1100x650")
+        self.title("Register")
+        self.configure(background="#c5f7fb")
+        global txtdateAcc, txtname, txtuserName, txtaccNum, txtpassd, txtgender, txtdoB, txtaccTyp, txtnationality, txtmobNum, txtkYC, txtbalance
+        global DateAcc, Name, UserName, AccNum, Pass, Gender, DoB, AccTyp, Nationality, MobNum, KYC, Balance
+        
+        self.lblRegister = tk.Label(self, text="CUSTOMER REGISTRATION", font=("-family {Segoe UI} -size 16 -weight bold"), bg="#c5f7fb", fg="#1b2020").grid(row=0,column=2,pady=10)
+        self.lblDateAcc = tk.Label(self, text="Enter Date Of Account Creation(yyyy-mm-dd):", font=("-family {Segoe UI} -size 12"), bg="#dffdd8", fg="#1b2020").grid(row=1,pady=5)
+        self.lblName = tk.Label(self, text="Enter Full Name:", font=("-family {Segoe UI} -size 12"), bg="#dffdd8", fg="#1b2020").grid(row=2,pady=5)
+        self.lblUserName= tk.Label(self, text="Enter UserName:", font=("-family {Segoe UI} -size 12"), bg="#dffdd8", fg="#1b2020").grid(row=3,pady=5)
+        self.lblAccNum = tk.Label(self, text="Enter Account Number:", font=("-family {Segoe UI} -size 12"), bg="#dffdd8", fg="#1b2020").grid(row=4,pady=5)
+        self.lblPass = tk.Label(self, text="Enter Password:", font=("-family {Segoe UI} -size 12"), bg="#dffdd8", fg="#1b2020").grid(row=5,pady=5)
+        self.lblGender = tk.Label(self, text="Enter Gender:", font=("-family {Segoe UI} -size 12"), bg="#dffdd8", fg="#1b2020").grid(row=6,pady=5)
+        self.lblDoB = tk.Label(self, text="Enter Date Of Birth(yyyy-mm-dd):", font=("-family {Segoe UI} -size 12"), bg="#dffdd8", fg="#1b2020").grid(row=7,pady=5)
+        self.lblAccTyp = tk.Label(self, text="Enter Account Type:", font=("-family {Segoe UI} -size 12"), bg="#dffdd8", fg="#1b2020").grid(row=8,pady=5)
+        self.lblNationality = tk.Label(self, text="Enter Nationality:", font=("-family {Segoe UI} -size 12"), bg="#dffdd8", fg="#1b2020").grid(row=9,pady=5)
+        self.lblMobNum = tk.Label(self, text="Enter Mobile Number(10):", font=("-family {Segoe UI} -size 12"), bg="#dffdd8", fg="#1b2020").grid(row=10,pady=5)
+        self.lblKYC = tk.Label(self, text="Enter KYC:", font=("-family {Segoe UI} -size 12"), bg="#dffdd8", fg="#1b2020").grid(row=11,pady=5)
+        self.lblBalance = tk.Label(self, text="Enter Initial Amount:", font=("-family {Segoe UI} -size 12"), bg="#dffdd8", fg="#1b2020").grid(row=12,pady=5)
+        self.lblcopy = tk.Label(self, text="© 2022 IMAGECON INDIA", font=("-family {Segoe UI} -size 12"), bg="#dffdd8", fg="#1b2020")
+        self.lblcopy.place(relx = 0.382, rely = 0.938, height = 21, width = 202)
+        
+        self.txtdateAcc = tk.Entry(self,width=60)
+        self.txtdateAcc.grid(row=1,column=2,pady=8)
+
+        self.txtname = tk.Entry(self,width=60)
+        self.txtname.grid(row=2,column=2,pady=8)
+
+        self.txtuserName = tk.Entry(self,width=60)
+        self.txtuserName.grid(row=3,column=2,pady=8)
+
+        self.txtaccNum = tk.Entry(self,width=60)
+        self.txtaccNum.grid(row=4,column=2,pady=8)
+
+        self.txtpassd = tk.Entry(self,width=60)
+        self.txtpassd.grid(row=5,column=2,pady=8)
+
+        self.txtgender = tk.Entry(self,width=60)
+        self.txtgender.grid(row=6,column=2,pady=8)
+
+        self.txtdoB = tk.Entry(self,width=60)
+        self.txtdoB.grid(row=7,column=2,pady=8)
+
+        self.txtaccTyp = tk.Entry(self,width=60)
+        self.txtaccTyp.grid(row=8,column=2,pady=8)
+
+        self.txtnationality = tk.Entry(self,width=60)
+        self.txtnationality.grid(row=9,column=2,pady=8)
+
+        self.txtmobNum = tk.Entry(self,width=60)
+        self.txtmobNum.grid(row=10,column=2,pady=8)
+
+        self.txtkYC = tk.Entry(self,width=60)
+        self.txtkYC.grid(row=11,column=2,pady=8)
+
+        self.txtbalance = tk.Entry(self,width=60)
+        self.txtbalance.grid(row=12,column=2,pady=8)
+
+
+        self.btn_register = tk.Button(self, text=" REGISTER ", font=("-family {Segoe UI} -size 12"), bg="#2e2594", fg="#ffffff", command=self.register).grid(row=13,column=2,pady=8)
+        self.btn_cancel = tk.Button(self, text=" BACK ", font=("-family {Segoe UI} -size 12"), bg="#2e2594", fg="#ffffff", command=self.onClose).grid(row=13,column=1,pady=8)
+        
+
+    def register(self):
+
+        DateAcc = self.txtdateAcc.get().strip()
+        Name = self.txtname.get().strip()
+        UserName = self.txtuserName.get().strip()
+        AccNum = self.txtaccNum.get().strip()
+        Pass = self.txtpassd.get().strip()
+        Gender = self.txtgender.get().strip()
+        DoB = self.txtdoB.get().strip()
+        AccTyp = self.txtaccTyp.get().strip()
+        Nationality = self.txtnationality.get().strip()
+        MobNum = self.txtmobNum.get().strip()
+        KYC = self.txtkYC.get().strip()
+        Balance = self.txtbalance.get().strip()
+
+        vals = (DateAcc, Name, UserName,AccNum, Pass, Gender, DoB, AccTyp,Nationality,MobNum,KYC,Balance)
+        sql = "INSERT INTO banking_system (DateAcc, Name, UserName, AccNum, Pass, Gender, DoB, AccTyp, Nationality, MobNum, KYC, Balance) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        cursor.execute(sql, vals)
+        connector.commit()
+        mb.showinfo("Success", "Your account has been created successfully")
+        self.destroy()
+        self.original_frame.show()
+
+    def onClose(self):
+        self.destroy()
+        self.original_frame.show()
+
+class LoginApp(tk.Tk):
+    
+    def __init__(self):
+        super().__init__()
+        self.title("IMAGECON INDIA BANK ")
+        self.geometry("1100x650")
+        self.configure(bg="#befffe")
+        self.configure(cursor="arrow")
+        self.lblHeading =tk.Label(self,text="WELCOME TO IMAGECON INDIA BANK", font=("-family {Segoe UI} -size 20 -weight bold"),bg="#befffe",fg="#000000")
+        self.lblHeading.place(relx = 0.16, rely = 0.089, height = 41, width = 600)
+
+        self.lbltext =tk.Label(self,text="TRUST AND EXCELLENCE SINCE 2018", font=("-family {Segoe UI} -size 16 -weight bold"),bg="#befffe",fg="#000000")
+        self.lbltext.place(relx = 0.16, rely = 0.189, height = 41, width = 600)
+
+
+        self.lbluname = tk.Label(self,text="Enter UserName:", font=("Source Serif Pro Semibold", 14),bg="#befffe",fg="#000000")
+        self.lbluname.place(relx = 0.212, rely = 0.378, height = 21, width = 162)
+        
+        self.lblpsswd = tk.Label(self,text="Enter Password:", font=("Source Serif Pro Semibold", 14),bg="#befffe",fg="#000000")
+        self.lblpsswd.place(relx = 0.212, rely = 0.489, height = 21, width = 166)
+
+        self.lblcopy = tk.Label(self,text="© 2022 IMAGECON INDIA", font=("Source Serif Pro Semibold", 12),bg="#befffe",fg="#000000")
+        self.lblcopy.place(relx = 0.382, rely = 0.938, height = 21, width = 202)
+       
+        self.txtuname = tk.Entry(self,width=60)
+        self.txtuname.place(relx = 0.410, rely = 0.378, height = 25, relwidth = 0.27)
+
+        self.txtpasswd = tk.Entry(self,width=60, show="*")
+        self.txtpasswd.place(relx = 0.410, rely = 0.489,height = 25, relwidth = 0.27)
+ 
+        self.btn_login = tk.Button(self, text="Login",font=("Source Serif Pro Semibold", 12),bg="#008351",fg="#fbfbfb",highlightcolor="black",command=self.login)
+        self.btn_login.place(relx = 0.120, rely = 0.650, height = 24, width = 150)
+ 
+        self.btn_clear= tk.Button(self, text="Clear",font=("Source Serif Pro Semibold", 12),bg="#008351",fg="#fbfbfb",highlightcolor="black",command=self.clear_form)
+        self.btn_clear.place(relx = 0.405, rely = 0.650, height = 24, width = 150)
+ 
+        self.btn_register = tk.Button(self, text="Register", font=("Source Serif Pro Semibold", 12),bg="#008351",fg="#fbfbfb",highlightcolor="black",command=self.open_registration_window)
+        self.btn_register.place(relx = 0.695, rely = 0.650, height = 24, width = 150 )
+ 
+        self.btn_exit = tk.Button(self, text="Exit",font=("Source Serif Pro Semibold", 16),bg="#ae0000",fg="#fbfbfb",highlightcolor="black", command=self.exit)
+        self.btn_exit.place(relx = 0.735, rely = 0.750, height = 24, width = 70)
+
+        self.Label3 = tk.Label(background="#befffe", disabledforeground="#a3a3a3", foreground="#000000")
+        self.Label3.place(relx=0.75, rely=0.011, height=304, width=204)
+
+        global _img
+        _img = tk.PhotoImage(file="./images/logpic.png")
+        self.Label3.configure(image=_img)
+       
+
+    def open_registration_window(self):
+        self.withdraw()
+        window = RegisterWindow(self)
+        window.grab_set()
+
+
+    def open_login_success_window(self):
+        self.withdraw()
+        window = Login_Success_Window(self)
+        window.grab_set()
+
+
+    def show(self):
+      
+        self.update()
+        self.deiconify()
+
+
+    def login(self):
+
+        u = self.txtuname.get()
+        p = self.txtpasswd.get()
+
+        connector = pymysql.connect(host="localhost",user = 'root', password = 'xxxxx',database = 'xxxx')
+
+        cursor = connector.cursor()
+
+        query = "SELECT UserName,Pass FROM banking_system WHERE UserName = '%s' AND Pass = '%s'"%(u,p)
+
+        try:
+            cursor.execute(query)
+            results = cursor.fetchall()
+            print(results)
+    
+            for r in results:
+                print("Username:",r[2])
+                print("Password:",r[4])
+
+        except:
+            print ("Error: unable to fetch data")
+
+        connector.close()
+
+        if(len(results) != 0):
+            mb.showinfo("Success","Login Success !")
+            customerMenu(Toplevel(self.master))
+        else:
+            mb.showerror("Error","Username or Password is Incorrect")
+
+    def clear_form(self):
+            self.txtuname.delete(0, tk.END)
+            self.txtpasswd.delete(0, tk.END)
+            self.txtuname.focus_set()
+
+    def exit(self):
+            MsgBox = mb.askquestion('Exit Application', 'Are you sure you want to exit the application?',icon='warning')
+            if MsgBox == 'yes':
+                self.destroy()
+
+
+class customerMenu:
+    def __init__(self, window=None):
+        self.master = window
+        window.geometry("1050x600")
+        window.minsize(120, 1)
+        window.maxsize(1370, 749)
+        window.resizable(0, 0)
+        window.title("Customer Section")
+        window.configure(background="#a0f2be")
+
+        self.Labelframe1 = tk.LabelFrame(window, relief='groove', font="-family {Segoe UI} -size 15 -weight bold",
+                                         foreground="#000000", text='''HOME SCREEN''', background="#fffffe")
+        self.Labelframe1.place(relx=0.081, rely=0.051, relheight=0.8000, relwidth=0.848)
+
+        self.buttransfer = tk.Button(self.Labelframe1, command=self.selectTransfer, background="#39a9fc", borderwidth="0", font="-family {Segoe UI} -size 11", foreground="#fffffe",
+                                 highlightbackground="#d9d9d9", highlightcolor="black", text='''Transfer''')
+        self.buttransfer.place(relx=0.667, rely=0.195, height=34, width=181, bordermode='ignore')
+
+        self.butdep = tk.Button(self.Labelframe1, command=self.selectDeposit, background="#39a9fc", borderwidth="0", font="-family {Segoe UI} -size 11", foreground="#fffffe",
+                                 highlightbackground="#d9d9d9", highlightcolor="black", pady="0", text='''Deposit''')
+        self.butdep.place(relx=0.15, rely=0.195, height=34, width=181, bordermode='ignore')
+
+        self.butexit = tk.Button(self.Labelframe1, command=self.exit, background="#39a9fc",borderwidth="0",  font="-family {Segoe UI} -size 11",
+                                 foreground="#fffffe", highlightbackground="#d9d9d9", highlightcolor="black", pady="0", text='''Exit''')
+        self.butexit.place(relx=0.667, rely=0.683, height=34, width=181, bordermode='ignore')
+
+        self.butpin = tk.Button(self.Labelframe1, command=self.selectChangePIN, background="#39a9fc", borderwidth="0",font="-family {Segoe UI} -size 11", foreground="#fffffe",
+                                 highlightbackground="#d9d9d9", highlightcolor="black", pady="0", text='''Change PIN''')
+        self.butpin.place(relx=0.15, rely=0.439, height=34, width=181, bordermode='ignore')
+
+        self.butclose = tk.Button(self.Labelframe1, command=self.selectCloseAccount, background="#39a9fc", borderwidth="0",font="-family {Segoe UI} -size 11", foreground="#fffffe",
+                                 highlightbackground="#d9d9d9", highlightcolor="black", pady="0",text='''Close account''')
+        self.butclose.place(relx=0.667, rely=0.439, height=34, width=181, bordermode='ignore')
+
+        self.butbal = tk.Button(self.Labelframe1, background="#39a9fc", borderwidth="0",font="-family {Segoe UI} -size 11", foreground="#fffffe",
+                                 highlightbackground="#d9d9d9", highlightcolor="black", pady="0",text='''Check your balance''', command=self.checkBalance)
+        self.butbal.place(relx=0.15, rely=0.683, height=34, width=181, bordermode='ignore')
+
+        self.Labcop = tk.Label(window, background="#a0f2be", font="-family {Segoe UI} -size 13 -weight bold", foreground="#000000",
+                          text="© 2022 IMAGECON INDIA")
+        self.Labcop.place(relx=0.375, rely=0.941, height=41, width=254)
+
+        self.Lablogo = tk.Label(self.Labelframe1, background="#fffffe", foreground="#000000")
+        self.Lablogo.place(relx=0.406, rely=0.104, height=294, width=174)
+        global _img
+        _img = tk.PhotoImage(file="./images/logpic.png")
+        self.Lablogo.configure(image=_img)
+
+
+    def selectDeposit(self):
+        depositMoney(Toplevel(self.master))
+
+    def selectTransfer(self):
+        transferMoney(Toplevel(self.master))
+
+    def selectChangePIN(self):
+        changePIN(Toplevel(self.master))
+
+    def checkBalance(self):
+        checkBalance(Toplevel(self.master))
+
+    def selectCloseAccount(self):
+        closeAccount(Toplevel(self.master))
+
+    def exit(self):
+        self.master.withdraw()
+        LoginApp(Toplevel(self))
+
+class changePIN:
+    def __init__(self, window=None):
+        self.master = window
+        window.geometry("750x500")
+        window.minsize(120, 1)
+        window.maxsize(1370, 749)
+        window.resizable(0, 0)
+        window.title("CHANGE PIN")
+        window.configure(background="#b9a1ea")
+        global n, a, c, Entus, Entnew, Entpin, old
+
+        self.Label1 = tk.Label(window, background="#b9a1ea",font="-family {Segoe UI} -size 16 -weight bold", foreground="#000000",text='''PIN CHANGE''')
+        self.Label1.place(relx=0.376, rely=0.026, height=30, width=174)
+        
+        self.Labus = tk.Label(window, background="#b9a1ea",font="-family {Segoe UI} -size 13 -weight bold", foreground="#000000",text='''Enter Username:''')
+        self.Labus.place(relx=0.086, rely=0.199, height=25, width=154)
+        self.Entus = tk.Entry(window, font=('Calibri',14))
+        self.Entus.place(relx=0.386, rely=0.199, height = 25, width = 180)
+        
+        self.Labnew = tk.Label(window, background="#b9a1ea", disabledforeground="#a3a3a3",font="-family {Segoe UI} -size 13 -weight bold", foreground="#000000",text='''Enter new PIN:''')
+        self.Labnew.place(relx=0.086, rely=0.299, height=25, width=174)
+        self.Entnew = tk.Entry(window, font=('Calibri',14), show="*")
+        self.Entnew.place(relx=0.386, rely=0.299, height = 25, width =180)
+
+        
+        self.Labpin = tk.Label(window, background="#b9a1ea", disabledforeground="#a3a3a3",font="-family {Segoe UI} -size 13 -weight bold", foreground="#000000",text='''Confirm new PIN:''')
+        self.Labpin.place(relx=0.086, rely=0.399, height=25, width=174)
+        self.Entpin = tk.Entry(window, font=('Calibri',14), show="*")
+        self.Entpin.place(relx=0.386, rely=0.399, height = 25, width = 180)
+    
+    
+        self.Butpro = tk.Button(window, background="#960404",borderwidth="0",font="-family {Segoe UI} -size 12", foreground="#ffffff",
+                                 highlightbackground="#d9d9d9",highlightcolor="black", pady="20", text='''PROCEED''',command= self.submit)
+        self.Butpro.place(relx=0.476, rely=0.639, height=34, width=84)
+        self.Butback = tk.Button(window, background="#960404", borderwidth="0", foreground="#ffffff",font="-family {Segoe UI} -size 13",
+                                 highlightbackground="#d9d9d9",highlightcolor="black", pady="20", text="BACK", command=self.back)
+        self.Butback.place(relx=0.236, rely=0.639, height=34, width=84)     
+        self.Labcop = tk.Label(window, background="#b9a1ea",font="-family {Segoe UI} -size 13 -weight bold", text="© 2022 IMAGECON INDIA")
+        self.Labcop.place(relx=0.228, rely=0.929, height=20, relwidth=0.509)
+
+        self.Lablogo = tk.Label(window, background="#b9a1ea", foreground="#000000")
+        self.Lablogo.place(relx=0.686, rely=0.089, height=374, width=174)
+        global _img
+        _img = tk.PhotoImage(file="./images/Picture1.png")
+        self.Lablogo.configure(image=_img)
+        
+    def submit(self):
+        n = self.Entus.get()
+        a = self.Entpin.get()
+        c = self.Entnew.get()
+
+        connector.ping()
+        select = "SELECT UserName, Pass FROM banking_system WHERE UserName = '%s'"%(n)
+        cursor.execute(select)
+        old = cursor.fetchall()
+        print(old)
+        connector.commit()
+
+        newpin = "UPDATE banking_system SET Pass = %s WHERE UserName = '%s'"%(a,n)
+
+        try:
+            if a == c:
+                cursor.execute(newpin)
+                connector.commit()            
+                mb.showinfo('Information','Success! Your PIN has been Changed')
+                connector.close()
+                self.master.withdraw()
+                
+            else:
+                mb.showinfo('Information','Failure! NO PIN CHANGED')
+                connector.rollback()
+                self.master.withdraw()
+
+        except:
+            mb.showwarning("Error")
+            connector.rollback()
+            self.master.withdraw()
+
+
+    def back(self):
+        self.master.withdraw()
+
+
+
+class checkBalance:
+
+    def __init__(self, window=None):
+        self.master = window
+        window.geometry("650x450")
+        window.minsize(120, 1)
+        window.maxsize(1370, 749)
+        window.resizable(0, 0)
+        window.title("CHECK BALANCE")
+        window.configure(borderwidth="2")
+        window.configure(background="#def1f5")
+        global check, Entusern, output
+
+        self.Labbal = tk.Label(window, background="#def1f5", disabledforeground="#a3a3a3",
+                               font="-family {Segoe UI} -size 13 -weight bold", foreground="#000000", borderwidth="0",
+                               text='''CHECK ACCOUNT BALANCE''')
+        self.Labbal.place(relx=0.246, rely=0.061, height=21, width=294)
+
+        self.Labusern = tk.Label(window, background="#def1f5", disabledforeground="#a3a3a3",
+                               font="-family {Segoe UI} -size 11", foreground="#000000", borderwidth="0",
+                               text='''Enter Username :''')
+        self.Labusern.place(relx=0.146, rely=0.221, height=21, width=144)
+
+        self.Entusern = tk.Entry(window,font="TkFixedFont", foreground="#000000")
+        self.Entusern.place(relx=0.435, rely=0.221, height=20, relwidth=0.303)
+
+        self.Labcop = tk.Label(window, background="#def1f5",font="-family {Segoe UI} -size 13 -weight bold", text="© 2022 IMAGECON INDIA")
+        self.Labcop.place(relx=0.238, rely=0.919, height=20, relwidth=0.509)       
+
+        self.Button1 = tk.Button(window,background="#a6f47e", borderwidth="0",highlightbackground="#000000",highlightcolor="black", pady="20", text='''PROCEED''',
+                                 command=self.submit, font="-family {Segoe UI} -size 11")
+        self.Button1.place(relx=0.56, rely=0.368, height=24, width=97)
+
+        self.Button2 = tk.Button(window,background="#a6f47e", font="-family {Segoe UI} -size 11", highlightbackground="#d9d9d9", borderwidth="0", highlightcolor="black", pady="20",
+                                 text='''BACK''', command=self.back)
+        self.Button2.place(relx=0.268, rely=0.368, height=24, width=97)
+
+        self.Lablogo = tk.Label(window, background="#def1f5", foreground="#000000")
+        self.Lablogo.place(relx=0.386, rely=0.509, height=104, width=144)
+        global _img
+        _img = tk.PhotoImage(file="./images/Picture2.png")
+        self.Lablogo.configure(image=_img)
+
+    def submit(self):
+
+        check = self.Entusern.get()
+        
+        connector.ping()
+        balan = "SELECT Balance FROM banking_system WHERE UserName = '%s' "%(check)
+        try:
+            cursor.execute(balan)
+            output = cursor.fetchall()
+            connector.commit()
+            balancecheck = ("Your Account Balance is: Rs. " , output)
+            print(output)
+            mb.showinfo("Balance Info", balancecheck)
+            connector.close()
+            self.master.withdraw()
+            
+
+        except:
+            mb.showinfo("Error: unable to fetch data")
+            connector.rollback()
+            self.master.withdraw()
+
+
+    def back(self):
+        self.master.withdraw()
+
+
+class transferMoney:
+    def __init__(self, window=None):
+        self.master = window
+        window.geometry("900x600")
+        window.minsize(120, 1)
+        window.maxsize(1370, 749)
+        window.resizable(0, 0)
+        window.title("TRANSFER MONEY")
+        window.configure(borderwidth="2")
+        window.configure(background="#fff097")
+        global user, payee, amt, ifsc, bal
+        global Entuser, Entpayee, Entamt, Entifsc
+
+        self.Labtop = tk.Label(window, background="#fff097", font=("-family {Segoe UI} -size 16 -weight bold"), foreground="#000000",text='''FUND TRANSFER''').grid(row=0,column=1,sticky=N,pady=15)
+
+
+        self.Labuser = tk.Label(window, background="#ffc962", font=('Calibri',14), foreground="#000000",text='''Enter Username :''').grid(row=1,sticky=N,pady=15)
+        self.Entuser = tk.Entry(window,font=('TkFixedFont',14))
+        self.Entuser.grid(row=1,column=1,sticky=W,padx=15)
+
+        
+        self.Labpayee = tk.Label(window, background="#ffc962", font=('Calibri',14), foreground="#000000", text='''Enter the Payee's Account number :''').grid(row=2,sticky=N,pady=15)
+        self.Entpayee = tk.Entry(window,font=('TkFixedFont',14))
+        self.Entpayee.grid(row=2,column=1,sticky=W,padx=15)
+
+        
+        self.Labamt = tk.Label(window, background="#ffc962", font=('Calibri',14), foreground="#000000",
+                               text='''Enter the Amount to Transfer :''').grid(row=3,sticky=N,pady=15)
+        self.Entamt = tk.Entry(window,font=('TkFixedFont',14))
+        self.Entamt.grid(row=3,column=1,sticky=W,padx=15)
+
+        self.Labifsc = tk.Label(window, background="#ffc962", font=('Calibri',14), foreground="#000000",
+                               text='''Enter the IFSC Code :''').grid(row=4,sticky=N,pady=15)
+        self.Entifsc = tk.Entry(window,font=('TkFixedFont',14))
+        self.Entifsc.grid(row=4,column=1,sticky=W,padx=15)
+        
+
+        self.Labcop = tk.Label(window, background="#fff097",font="-family {Segoe UI} -size 13 -weight bold", text="© 2022 IMAGECON INDIA")
+        self.Labcop.place(relx=0.218, rely=0.949, height=20, relwidth=0.509)
+
+
+        self.Butpro = tk.Button(window, background="#64ec4e", borderwidth="0", highlightbackground="#d9d9d9",
+                                 font=('Calibri',14), highlightcolor="black", text='''Proceed''', command= self.submit)
+        self.Butpro.place(relx=0.367, rely=0.623, height=25, relwidth=0.16)
+
+
+        self.Butback = tk.Button(window, activebackground="#ececec",background="#64ec4e", borderwidth="0", font=('Calibri',14),
+                                 highlightbackground="#d9d9d9", highlightcolor="black", pady="0", text='''Back''', command=self.back)
+        self.Butback.place(relx=0.097, rely=0.623, height=25, relwidth=0.16)
+
+        self.Lablogo = tk.Label(window, background="#fff097", foreground="#000000")
+        self.Lablogo.place(relx=0.686, rely=0.089, height=374, width=174)
+        global _img
+        _img = tk.PhotoImage(file="./images/Picture3.png")
+        self.Lablogo.configure(image=_img)
+        
+
+
+    def submit(self):
+        
+        user = self.Entuser.get().strip()
+        payee = self.Entpayee.get().strip()
+        amt = self.Entamt.get().strip()
+        ifsc = self.Entifsc.get().strip()
+
+        connector.ping()
+        transfer = "SELECT UserName, Balance FROM banking_system WHERE UserName = '%s'"%(user)
+
+        cursor.execute(transfer)
+        bal=cursor.fetchall()
+        print(bal)
+        connector.commit()
+
+        try:
+
+            query1="UPDATE banking_system SET Balance = (Balance -  %s ) WHERE (UserName = '%s')"%(amt,user)
+            cursor.execute(query1)
+            connector.commit()
+        
+            mb.showinfo('Information','Success! Your money has been Transfered')
+            connector.close()
+            self.master.withdraw()
+
+        except:
+            
+            mb.showinfo('Information','Failure! Your money has not been Transfered')
+            connector.rollback()
+            self.master.withdraw()
+
+    def back(self):
+        self.master.withdraw()
+
+
+
+class depositMoney:
+    def __init__(self, window=None):
+        self.master = window
+        window.geometry("650x450")
+        window.minsize(120, 1)
+        window.maxsize(1370, 749)
+        window.resizable(0, 0)
+        window.title("Deposit money")
+        p1 = PhotoImage(file='./images/deposit_icon.png')
+        window.iconphoto(True, p1)
+        window.configure(borderwidth="2")
+        window.configure(background="#a5f2f4")
+        global u,b,balance
+
+        self.Label = tk.Label(window, background="#a5f2f4", disabledforeground="#a3a3a3", font="-family {Segoe UI} -size 13 -weight bold", foreground="#000000", borderwidth="0",
+                               text='''MONEY DEPOSIT''')
+        self.Label.place(relx=0.316, rely=0.031, height=21, width=204)
+
+        self.Label1 = tk.Label(window, background="#a5f2f4", disabledforeground="#a3a3a3", font="-family {Segoe UI} -size 11 -weight bold", foreground="#000000", borderwidth="0",
+                               text='''Enter Username :''')
+        self.Label1.place(relx=0.146, rely=0.171, height=21, width=174)
+
+        self.Entry1 = tk.Entry(window, background="#f3f9ff", disabledforeground="#a3a3a3", font="TkFixedFont",
+                               foreground="#000000", insertbackground="black", selectforeground="#ffffffffffff")
+        self.Entry1.place(relx=0.535, rely=0.171, height=20, relwidth=0.253)
+
+        self.Label2 = tk.Label(window, background="#a5f2f4", disabledforeground="#a3a3a3", font="-family {Segoe UI} -size 11 -weight bold", foreground="#000000", borderwidth="0",
+                               text='''Enter amount to be deposited :''')
+        self.Label2.place(relx=0.126, rely=0.241, height=21, width=254)
+
+        self.Labcop = tk.Label(window, background="#a5f2f4",font="-family {Segoe UI} -size 13 -weight bold", text="© 2022 IMAGECON INDIA")
+        self.Labcop.place(relx=0.228, rely=0.939, height=20, relwidth=0.509)
+
+        self.Entry2 = tk.Entry(window, background="#f3f9ff", disabledforeground="#a3a3a3", font="TkFixedFont",
+                               foreground="#000000", insertbackground="black", selectforeground="#ffffffffffff")
+        self.Entry2.place(relx=0.535, rely=0.241, height=20, relwidth=0.253)
+
+        u = self.Entry1.get()
+        b = self.Entry2.get()
+
+        self.Button1 = tk.Button(window, activebackground="#ececec", activeforeground="#000000", background="#004080", disabledforeground="#a3a3a3", borderwidth="0", foreground="#ffffff",
+                                 highlightbackground="#000000", highlightcolor="black", pady="0", text='''PROCEED''', command= lambda:self.submit(b))
+        self.Button1.place(relx=0.56, rely=0.348, height=24, width=67)
+
+        self.Button2 = tk.Button(window, activebackground="#ececec", activeforeground="#000000", background="#004080", disabledforeground="#a3a3a3", font="-family {Segoe UI} -size 9", foreground="#ffffff",
+                                 highlightbackground="#d9d9d9", borderwidth="0", highlightcolor="black", pady="0", text='''BACK''', command=self.back)
+        self.Button2.place(relx=0.268, rely=0.348, height=24, width=67)
+
+        
+        self.Lablogo = tk.Label(window, background="#a5f2f4", foreground="#000000")
+        self.Lablogo.place(relx=0.366, rely=0.479, height=150, width=142)
+        global _img
+        _img = tk.PhotoImage(file="./images/logonew1.png")
+        self.Lablogo.configure(image=_img)
+        
+
+
+    def submit(self,b):
+        u = self.Entry1.get()
+        b = self.Entry2.get()
+
+        connector.ping()
+        dep = "SELECT UserName, Balance FROM banking_system WHERE UserName = '%s' AND Balance = %s"%(u,b)
+        cursor.execute(dep)
+        balance=cursor.fetchall()
+        print(balance)
+        connector.commit()
+        print(u,b)
+        
+        quer="UPDATE banking_system SET Balance = (Balance +  %s ) WHERE (UserName = '%s')"%(b,u)
+
+        try:
+            i=cursor.execute(quer)
+            connector.commit()            
+            mb.showinfo('Information','Success! Your money has been deposited')
+            connector.close()
+            self.master.withdraw()
+
+        except:
+            mb.showerror('Information','Failure! Transaction Failed')
+            connector.rollback()
+            self.master.withdraw()
+
+    def back(self):
+        self.master.withdraw()
+
+
+class closeAccount:
+    def __init__(self, window=None):
+        self.master = window
+        window.geometry("750x500")
+        window.minsize(120, 1)
+        window.maxsize(1370, 749)
+        window.resizable(0, 0)
+        window.title("CLOSE ACCOUNT")
+        window.configure(background="#f1cbff")
+        global closeu, closep,closea, Entuser, Entpin
+
+        self.Label = tk.Label(window, background="#f1cbff", disabledforeground="#a3a3a3", foreground="#000000",
+                               text='''DELETE ACCOUNT''',font="-family {Segoe UI} -size 15 -weight bold")
+        self.Label.place(relx=0.376, rely=0.016, height=30, width=174)
+        
+        self.Label1 = tk.Label(window, background="#f1cbff", disabledforeground="#a3a3a3", foreground="#000000",
+                               text='''Enter your Username:''',font=('Calibri',14))
+        self.Label1.place(relx=0.086, rely=0.199, height=25, width=184)
+
+        self.Label2 = tk.Label(window, background="#f1cbff", disabledforeground="#a3a3a3", foreground="#000000",
+                               text='''Enter your PIN:''',font=('Calibri',14))
+        self.Label2.place(relx=0.086, rely=0.359, height=25, width=174)        
+
+
+        self.Entuser = tk.Entry(window,font=('Calibri',14), foreground="#000000")
+        self.Entuser.place(relx=0.386, rely=0.199, height=20, width=180)
+
+        self.Entpin = tk.Entry(window, show="*",font=('Calibri',14), foreground="#000000")
+        self.Entpin.place(relx=0.386, rely=0.359, height=20, width=180)
+
+        closeu = self.Entuser.get()
+        closep = self.Entpin.get()
+
+        self.Labcop = tk.Label(window, background="#f1cbff",font="-family {Segoe UI} -size 13 -weight bold", text="© 2022 IMAGECON INDIA")
+        self.Labcop.place(relx=0.228, rely=0.929, height=20, relwidth=0.509)
+
+        self.Button1 = tk.Button(window, background="#7600b8", borderwidth="0", foreground="#ffffff", highlightbackground="#000000", font="-family {Segoe UI} -size 12",
+                                 highlightcolor="black", pady="10", text='''Proceed''', command= self.submit)
+        self.Button1.place(relx=0.436, rely=0.639, height=34, width=84)
+
+        self.Button2 = tk.Button(window, background="#7600b8", font="-family {Segoe UI} -size 12", foreground="#ffffff",
+                                 highlightbackground="#000000", borderwidth="0", highlightcolor="black", pady="10", text='''Back''', command=self.back)
+        self.Button2.place(relx=0.236, rely=0.639, height=34, width=84) 
+
+        self.Lablogo = tk.Label(window, background="#f1cbff", foreground="#000000")
+        self.Lablogo.place(relx=0.686, rely=0.089, height=274, width=174)
+        global _img
+        _img = tk.PhotoImage(file="./images/Picture4.png")
+        self.Lablogo.configure(image=_img)
+
+
+    def submit(self):
+        closeu = self.Entuser.get().strip()
+        closep = self.Entpin.get().strip()
+
+        connector.ping()
+        delete = "DELETE FROM banking_system WHERE (UserName= '%s')"%(closeu)
+        
+        try:
+            cursor.execute(delete)
+            connector.commit()            
+            mb.showinfo('Information','Success! Your Account has been Deleted')
+            connector.close()
+            self.master.withdraw()
+            LoginApp(Toplevel(self))
+
+
+        except:
+            mb.showwarning("Error")
+            connector.rollback()
+            self.master.withdraw()
+            LoginApp(Toplevel(self))
+
+
+    def back(self):
+        self.master.withdraw()
+        LoginApp(Toplevel(self))
+    
+
+
+
+if __name__ == "__main__":
+        app = LoginApp()
+        app.mainloop()
+           
