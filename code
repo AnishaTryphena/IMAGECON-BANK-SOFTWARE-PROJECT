@@ -124,6 +124,7 @@ class RegisterWindow(tk.Toplevel):
         KYC = self.txtkYC.get().strip()
         Balance = self.txtbalance.get().strip()
 
+        connector.ping()
         vals = (DateAcc, Name, UserName,AccNum, Pass, Gender, DoB, AccTyp,Nationality,MobNum,KYC,Balance)
         sql = "INSERT INTO banking_system (DateAcc, Name, UserName, AccNum, Pass, Gender, DoB, AccTyp, Nationality, MobNum, KYC, Balance) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         cursor.execute(sql, vals)
